@@ -45,7 +45,7 @@ main, .foot { margin-right: var(--side-min); }
 
 /* Hero: logo is drawn like a sketch, then filled in */
 .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(1.25rem, 4svh, 2.5rem); padding: var(--pad); }
-.hero { overflow: hidden; isolation: isolate; }
+.hero { overflow: hidden; isolation: isolate; padding-bottom: calc(var(--pad) + 3.5rem); --logo-h: min(46svh, 30rem, 74vw); }
 .hero-bg { position: absolute; inset: 0; z-index: -1; background: var(--black); }
 .hero-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgb(0 0 0 / .4), rgb(0 0 0 / .2) 50%, rgb(0 0 0 / .55)); }
 .hero-collage { position: absolute; inset: -2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); grid-auto-rows: 13rem; grid-auto-flow: dense; gap: .5rem; filter: blur(5px) brightness(.5) grayscale(.35); transform: scale(1.05); }
@@ -53,17 +53,30 @@ main, .foot { margin-right: var(--side-min); }
 .hero-collage img:nth-child(3n) { transform: rotate(-2deg) scale(1.06); }
 .hero-collage img:nth-child(4n+1) { transform: rotate(1.5deg) scale(1.04); }
 .hero-collage img:nth-child(5n) { grid-row: span 2; }
-.hero-logo { height: min(56svh, 38rem); width: auto; max-width: 100%; }
-.hero-word { font-family: var(--title); font-size: clamp(1.8rem, 5vw, 3.6rem); font-weight: 700; letter-spacing: .45em; margin-right: -.45em; text-transform: uppercase; opacity: 0; animation: word-in 1.4s var(--ease) 2.1s forwards; }
+.hero-logo { height: var(--logo-h); width: auto; max-width: 100%; }
+/* Lockup: logo, THREAM and the tagline share one centered column; everything scales from --logo-h */
+.hero-lockup { --lock-w: min(calc(var(--logo-h) * 1.45), 86vw); display: flex; flex-direction: column; align-items: center; gap: clamp(.6rem, 2svh, 1.25rem); max-width: 100%; }
+.hero-word { font-family: var(--title); font-size: clamp(1.8rem, 5vw, 3.6rem); font-weight: 700; letter-spacing: .45em; margin-right: -.45em; text-transform: uppercase; }
 @keyframes word-in { from { opacity: 0; transform: translateY(.75rem); } to { opacity: 1; transform: none; } }
 .sketch { overflow: visible; }
-.sketch path { fill: none; stroke: var(--white); stroke-width: 3.5; stroke-linejoin: round; }
+.sketch .sk-line, .sketch .sk-echo path { fill: none; stroke: var(--white); stroke-width: 3.5; stroke-linejoin: round; }
 .sketch .sk-line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: sk-draw var(--t) cubic-bezier(.65, 0, .35, 1) var(--d) forwards; }
 .sketch .sk-echo path { stroke-width: 1.8; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: .5; transform: translate(6px, -4px); animation: sk-draw var(--t) cubic-bezier(.65, 0, .35, 1) .5s forwards; }
-.sketch .sk-fill { fill: var(--white); stroke: none; opacity: 0; animation: sk-fade 1.2s ease-in-out var(--d) forwards; }
+/* Shared timing: logo fill and Thream fill start together and end together (--fill-d + --fill-t) */
+.hero { --fill-d: 3.9s; --fill-t: .3s; --fill-o: 1; --shine-d: 4.3s; }
+.sketch .sk-fill { fill: var(--white); opacity: 0; animation: fill-in var(--fill-t) ease-in-out var(--fill-d) forwards; }
+/* Glass glint: one bright band sweeps across the logo from the top-left corner to the bottom-right */
+.sketch .sk-shine { opacity: 0; animation: sk-shine 1.6s cubic-bezier(.45, 0, .55, 1) var(--shine-d) 1 both; }
+@keyframes fill-in { to { opacity: var(--fill-o); } }
+@keyframes sk-shine {
+    0% { opacity: 0; transform: translate(-540px, -720px); }
+    12% { opacity: 1; }
+    88% { opacity: 1; }
+    100% { opacity: 0; transform: translate(540px, 720px); }
+}
 @keyframes sk-draw { to { stroke-dashoffset: 0; } }
 @keyframes sk-fade { to { opacity: 1; } }
-.hero-cap { position: absolute; left: var(--pad); bottom: var(--pad); opacity: 0; animation: sk-fade 1s ease-in-out 2.4s forwards; }
+.hero-cap { position: absolute; left: var(--pad); bottom: var(--pad); opacity: 0; animation: sk-fade 1s ease-in-out 6.2s forwards; }
 .hero-cap p { margin: 0 0 .15rem; color: var(--grey); }
 .hero-cap a { font-weight: 500; text-underline-offset: 4px; }
 
@@ -187,14 +200,14 @@ dd { margin: 0; }
 
     /* Hero on mobile: smaller logo, and a clear zone at the top so the spider clock isn't covered by it */
     .hero { padding-top: 10.5rem; gap: clamp(1rem, 3svh, 1.75rem); }
-    .hero-logo { height: min(34svh, 17rem); max-width: 70%; }
+    .hero { --logo-h: min(34svh, 17rem, 64vw); }
     .spider { left: clamp(1rem, 6vw, 2rem); width: clamp(5.5rem, 26vw, 7rem); }
 }
 
 /* Short landscape phones: the spider is hidden, so the hero doesn't need the extra top space */
 @media (max-width: 800px) and (max-height: 560px) {
     .hero { padding-top: var(--pad); }
-    .hero-logo { height: min(50svh, 14rem); }
+    .hero { --logo-h: min(50svh, 14rem); }
 }
 
 /* Gallery: two photobooth-style strips (white frame, thin padding), top scrolls left, bottom scrolls right */
@@ -218,6 +231,47 @@ dd { margin: 0; }
     .side, .side::after, .grid, dialog, dialog::backdrop, .shot img, .ico { transition: none; }
 }
 
+/* "Thream" wordmark: each letter is outlined like a pen sketch (staggered), then filled in */
+.hero-word { margin: 0; line-height: 0; letter-spacing: 0; margin-right: 0; font-size: 1rem; }
+.word-sketch { display: block; width: var(--lock-w); height: auto; overflow: visible; font-family: var(--title); font-weight: 700; font-size: 112px; letter-spacing: 34px; }
+.word-sketch text { fill: none; stroke: var(--white); stroke-width: 2.2; stroke-linejoin: round; }
+.word-sketch .wd-line tspan { stroke-dasharray: 700; stroke-dashoffset: 700; animation: wd-draw 1.2s cubic-bezier(.65, 0, .35, 1) calc(2.1s + var(--i) * .15s) forwards; }
+.word-sketch .wd-fill { fill: var(--white); stroke: none; opacity: 0; animation: fill-in var(--fill-t) ease-in-out var(--fill-d) forwards; }
+@keyframes wd-draw { to { stroke-dashoffset: 0; } }
+/* The last letter gets no letter-spacing, otherwise the trailing gap makes the centered word look shifted to the left */
+.word-sketch tspan:last-child { letter-spacing: 0; }
+
 /* Brand wordmarks: "THREAM" in the hero and "Thream" in the sidebar (fonts are loaded from Google Fonts in layouts/app.blade.php). */
-.hero-word { font-family: var(--title); font-weight: 700; font-size: clamp(2.4rem, 6.5vw, 4.6rem); letter-spacing: .3em; margin-right: -.3em; }
+.hero-word { font-family: var(--title); }
 .side-brand .side-label { font-family: var(--title); font-weight: 700; font-size: 1.6rem; letter-spacing: .02em; }
+
+@media (prefers-reduced-motion: reduce) {
+    .sketch .sk-fill, .word-sketch .wd-fill { animation: none; opacity: var(--fill-o); }
+    .sketch .sk-shine { display: none; }
+    .word-sketch .wd-line tspan { animation: none; stroke-dashoffset: 0; }
+    .tg-l { animation: none; opacity: 1; transform: none; filter: none; }
+}
+
+/* Tagline "BREAK THE ROUTINE.": same width as THREAM (--word-w is measured in app.js), letters spread evenly */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.hero-tagline { width: calc(var(--lock-w) * var(--word-w, .71)); margin: calc(var(--lock-w) * .012) 0 0; font-family: var(--body); font-weight: 500; font-size: max(.62rem, calc(var(--lock-w) * .036)); line-height: 1; text-transform: uppercase; color: rgb(255 255 255 / .88); }
+.tg-row { display: flex; justify-content: space-between; align-items: baseline; }
+.tg-sp { flex: 0 0 .8em; }
+.tg-l { display: block; opacity: 0; will-change: transform, opacity;
+    animation:
+        tg-in .75s var(--ease) calc(var(--fill-d) + var(--fill-t) + .15s + var(--i) * .05s) both,
+        tg-wave 7s ease-in-out calc(var(--fill-d) + var(--fill-t) + 2.4s + var(--i) * .07s) infinite; }
+.tg-l:nth-child(odd) { --rot: -14deg; --dy: -1em; }
+.tg-l:nth-child(even) { --rot: 12deg; --dy: 1em; }
+/* Entrance: every letter "breaks" in from above/below with a tilt, then snaps into line */
+@keyframes tg-in {
+    0% { opacity: 0; transform: translateY(var(--dy)) rotate(var(--rot)) scale(1.25); filter: blur(5px); }
+    55% { opacity: 1; filter: blur(0); }
+    75% { transform: translateY(.08em) rotate(calc(var(--rot) * -.15)) scale(.98); }
+    100% { opacity: 1; transform: none; filter: blur(0); }
+}
+/* Loop: every 7 s a light pulse runs from the first letter to the last (uses `translate`, so it never fights the entrance transform) */
+@keyframes tg-wave {
+    0%, 14%, 100% { color: rgb(255 255 255 / .88); text-shadow: none; translate: 0 0; }
+    7% { color: #fff; text-shadow: 0 0 .7em rgb(255 255 255 / .85); translate: 0 -.2em; }
+}

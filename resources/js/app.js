@@ -242,3 +242,18 @@ if (spider && head && eyes && pupils && !matchMedia('(prefers-reduced-motion: re
         if (open) kick();
     }, { passive: true });
 })();
+
+// Tagline "BREAK THE ROUTINE." takes exactly the width of the THREAM wordmark:
+// measure the word inside its SVG and pass the ratio to CSS (--word-w).
+(() => {
+    const lockup = document.querySelector('.hero-lockup');
+    const word = document.querySelector('.word-sketch .wd-fill');
+    if (!lockup || !word) return;
+    const fit = () => {
+        const vb = word.ownerSVGElement.viewBox.baseVal.width;
+        const w = word.getBBox().width;
+        if (vb && w) lockup.style.setProperty('--word-w', (w / vb).toFixed(4));
+    };
+    fit();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();

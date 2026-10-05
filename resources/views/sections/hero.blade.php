@@ -19,9 +19,30 @@
         </div>
     @endif
 
-    @include('partials.logo-sketch')
     @include('partials.spider-clock')
-    <h1 class="hero-word">Thream</h1>
+
+    <div class="hero-lockup">
+        @include('partials.logo-sketch')
+        <h1 class="hero-word" aria-label="Thream">
+            <svg class="word-sketch" viewBox="0 0 900 150" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <text class="wd-line" x="450" y="112" text-anchor="middle"><tspan style="--i:0">T</tspan><tspan style="--i:1">H</tspan><tspan style="--i:2">R</tspan><tspan style="--i:3">E</tspan><tspan style="--i:4">A</tspan><tspan style="--i:5">M</tspan></text>
+                <text class="wd-fill" x="450" y="112" text-anchor="middle"><tspan>T</tspan><tspan>H</tspan><tspan>R</tspan><tspan>E</tspan><tspan>A</tspan><tspan>M</tspan></text>
+            </svg>
+        </h1>
+        <p class="hero-tagline">
+            <span class="sr-only">Break the routine.</span>
+            <span class="tg-row" aria-hidden="true">
+                @foreach (mb_str_split('BREAK THE ROUTINE.') as $i => $ch)
+                    @if ($ch === ' ')
+                        <span class="tg-sp"></span>
+                    @else
+                        <span class="tg-l" style="--i:{{ $i }}">{{ $ch }}</span>
+                    @endif
+                @endforeach
+            </span>
+        </p>
+    </div>
+
     <div class="hero-cap">
         <p>Thream, clothing for the quiet hours.</p>
         <a href="#products">View collection</a>
